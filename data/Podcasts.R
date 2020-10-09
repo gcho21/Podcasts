@@ -11,10 +11,10 @@ podcasts <- podcasts_html %>%
   html_text()
 
 description <- podcasts_html %>%
-  html_nodes('series.content-main') %>%
+  html_nodes('series .content-main') %>%
   html_text()
 
-podcasts_dat <- data.frame(podcast = podcasts, description = descriptions
+podcasts_dat <- data.frame(podcast = podcasts, description = description
                            , stringsAsFactors = FALSE) %>%
   mutate(together = paste('"', as.character(podcast), '" --'
                           , as.character(description), sep=""))
