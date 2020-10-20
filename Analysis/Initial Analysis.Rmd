@@ -1,0 +1,69 @@
+---
+title: "Podcast"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rvest)
+library(robotstxt)
+library(dplyr)
+library(stringr)
+library(tidytext)
+library(wordcloud)
+library(textdata)
+library(plyr)
+library(tm)
+```
+
+
+
+```{r}
+podcasts <- read_csv('/home/class21/gcho21/git/Podcasts/data/Podcasts.csv')
+podcasts <- podcasts %>%
+  select(podcast, description)
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+podcasts_uni <- podcasts %>%
+  unnest_tokens(output = word, input = description)
+podcasts_word <- podcasts %>%
+  unnest_tokens(output = word, input = description,
+                token = "ngrams", n = 2)
+
+ podcasts_strip <- podcasts_word %>%
+  separate(col = word, into = c("word1", "word2"), sep = " ", remove = FALSE) %>%
+  anti_join(stop_words, by = c('word1' = 'word')) %>%
+  anti_join(stop_words, by = c('word2' = 'word')) %>%
+  group_by(podcast)
+ 
+ pal <- brewer.pal(10, "Paired")
+ 
+ pod_n <- podcasts_strip %>%
+   dplyr::count(word) 
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+afinn_lexicon <- get_sentiments("afinn")
+nrc_lexicon <- get_sentiments("nrc")
+
+
+podcasts_uni %>%
+  anti_join(stop_words, by = 'word')
+
+
+tfidf <- podcasts_word %>%
+  bind_tf_idf(term = word, document = podcast)
+
+
+
+```
